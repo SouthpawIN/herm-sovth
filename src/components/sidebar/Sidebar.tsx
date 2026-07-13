@@ -82,6 +82,7 @@ export const Sidebar = memo((props: {
   const info = props.info
 
   const [mcpOpen, setMcpOpen] = useState(false)
+  const [wikiOpen, setWikiOpen] = useState(false)
 
   const cwd = info?.cwd ?? process.cwd()
   const branch = useGitBranch(cwd)
@@ -140,6 +141,14 @@ export const Sidebar = memo((props: {
             </Section>
           )
         })() : null}
+
+        <Section title="GOOP" hint="Wiki" open={wikiOpen} onToggle={() => setWikiOpen(o => !o)}>
+          <Row label="Context" value="SENTER.md" />
+          <Row label="Canvas" value="CHAT.md · SESSIONS.md" />
+          <Row label="Topic" value="active context" />
+          <Row label="Queue" value="proposal queue" />
+          <Row label="Flow" value="Collect → Apply" />
+        </Section>
 
         <box flexGrow={1} />
         <ContextGauge info={info} usage={props.usage} width={INNER} />

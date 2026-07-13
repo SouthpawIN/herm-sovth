@@ -85,6 +85,26 @@ describe("Sidebar", () => {
     t.destroy()
   })
 
+  test("GOOP section exposes Wiki context and canvas blocks", async () => {
+    const gw = new MockGateway({ "plugins.list": () => ({ plugins: [] }) })
+    const t = await mountNode(
+      <Sidebar agentState="idle" info={INFO} />,
+      { gw, width: 160, height: 48 },
+    )
+    await until(t, () => t.frame().includes("▸ GOOP"))
+    const lines = t.frame().split("\n")
+    const y = lines.findIndex(l => l.includes("▸ GOOP"))
+    const x = lines[y].indexOf("▸ GOOP")
+    await act(async () => { await t.mouse.pressDown(x, y) })
+    await until(t, () => t.frame().includes("▾ GOOP"))
+    const f = t.frame()
+    expect(f).toContain("SENTER.md")
+    expect(f).toContain("CHAT.md")
+    expect(f).toContain("SESSIONS.md")
+    expect(f).toContain("proposal queue")
+    t.destroy()
+  })
+
   test("context gauge renders used/max + bar + percent when usage present", async () => {
     const gw = new MockGateway({ "plugins.list": () => ({ plugins: [] }) })
     const info = {
