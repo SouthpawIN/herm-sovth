@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, memo } from "react"
-import { STATE_FRAMES, type AvatarState } from "./states"
+import { EIKON_STATE_MAPPING, STATE_FRAMES, type AvatarState } from "./states"
 import type { ParsedEikon, EikonState } from "./eikon"
 import { useTheme } from "../../theme"
 import * as perf from "../../utils/perf"
@@ -32,7 +32,12 @@ export const AnimatedAvatar = memo(({ state = "idle", eikon, onHold }: {
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const holdRef = useRef(onHold); holdRef.current = onHold
 
-  const clip: EikonState = eikon?.states.get(state) ?? STATE_FRAMES[state]
+  // Apply the same presentation mapping to user-selected Eikons; otherwise
+  // selecting a custom file silently bypasses the bundled state contract.
+  const mappedState = EIKON_STATE_MAPPING[state]
+  const clip: EikonState = eikon?.states.get(mappedState)
+    ?? eikon?.states.get(state)
+    ?? STATE_FRAMES[state]
   const { frames, fps, loopFrom } = clip
   const count = frames.length
 

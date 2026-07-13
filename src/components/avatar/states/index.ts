@@ -19,11 +19,26 @@ export const DEFAULT_EIKON = (() => {
   try { return parseEikon(defaultEikonText) } catch { return undefined }
 })();
 
+// Senter's presentation mapping: listening/working are active thought,
+// error is a held speaking frame so the avatar stays expressive while the
+// error banner is visible. The bundled Eikon still owns the actual art.
+export const EIKON_STATE_MAPPING: Record<AvatarState, string> = {
+  idle: "idle",
+  listening: "thinking",
+  thinking: "thinking",
+  speaking: "speaking",
+  working: "thinking",
+  error: "speaking",
+};
+
+const mapped = (name: string, fallback: AvatarState = "idle") =>
+  DEFAULT_EIKON?.states.get(name) ?? DEFAULT_EIKON?.states.get(fallback) ?? BLANK;
+
 export const STATE_FRAMES: Record<AvatarState, EikonState> = {
-  idle: DEFAULT_EIKON?.states.get("idle") ?? BLANK,
-  listening: DEFAULT_EIKON?.states.get("listening") ?? BLANK,
-  thinking: DEFAULT_EIKON?.states.get("thinking") ?? BLANK,
-  speaking: DEFAULT_EIKON?.states.get("speaking") ?? BLANK,
-  working: DEFAULT_EIKON?.states.get("working") ?? BLANK,
-  error: DEFAULT_EIKON?.states.get("error") ?? BLANK,
+  idle: mapped("idle"),
+  listening: mapped("thinking"),
+  thinking: mapped("thinking"),
+  speaking: mapped("speaking"),
+  working: mapped("thinking"),
+  error: mapped("speaking"),
 };
