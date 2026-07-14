@@ -10,6 +10,7 @@ import { Tail } from "../chat/ThoughtCloud"
 import { ContextGauge } from "./ContextGauge"
 import { useGateway } from "../../app/gateway"
 import type { PetInfoMeta } from "../../utils/gateway-types"
+import { Petdex } from "./Petdex"
 
 // The pillar body carries a compact identity block, the MCP operational
 // section, and a context-usage gauge at the bottom. Stats/Memory/Recent/
@@ -162,7 +163,12 @@ export const Sidebar = memo((props: {
           <Row label="Flow" value="Collect → Apply" />
         </Section>
 
-        {pet ? <Row label="Petdex" value={pet.displayName ?? pet.slug ?? "active"} /> : null}
+        {pet ? (
+          <box flexDirection="column">
+            <Row label="Petdex" value={pet.displayName ?? pet.slug ?? "active"} />
+            <Petdex state={state} cols={18} />
+          </box>
+        ) : null}
 
         <box flexGrow={1} />
         <ContextGauge info={info} usage={props.usage} width={INNER} />

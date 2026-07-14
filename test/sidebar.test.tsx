@@ -106,12 +106,16 @@ describe("Sidebar", () => {
   })
 
   test("Petdex metadata appears when the gateway has an active pet", async () => {
-    const gw = new MockGateway({ "pet.info.meta": () => ({ enabled: true, slug: "owl", displayName: "Three-Eyed Owl" }) })
+    const gw = new MockGateway({
+      "pet.info.meta": () => ({ enabled: true, slug: "owl", displayName: "Three-Eyed Owl" }),
+      "pet.cells": () => ({ enabled: true, frameMs: 100, frames: [[[[255, 0, 0, 255, 0, 0, 0, 0]]]] }),
+    })
     const t = await mountNode(
       <Sidebar agentState="idle" info={INFO} />,
       { gw, width: 160, height: 48 },
     )
     await until(t, () => t.frame().includes("Three-Eyed Owl"))
+    expect(gw.calls.some(call => call.method === "pet.cells")).toBe(true)
     t.destroy()
   })
 
