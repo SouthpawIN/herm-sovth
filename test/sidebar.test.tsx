@@ -105,6 +105,16 @@ describe("Sidebar", () => {
     t.destroy()
   })
 
+  test("Petdex metadata appears when the gateway has an active pet", async () => {
+    const gw = new MockGateway({ "pet.info.meta": () => ({ enabled: true, slug: "owl", displayName: "Three-Eyed Owl" }) })
+    const t = await mountNode(
+      <Sidebar agentState="idle" info={INFO} />,
+      { gw, width: 160, height: 48 },
+    )
+    await until(t, () => t.frame().includes("Three-Eyed Owl"))
+    t.destroy()
+  })
+
   test("context gauge renders used/max + bar + percent when usage present", async () => {
     const gw = new MockGateway({ "plugins.list": () => ({ plugins: [] }) })
     const info = {

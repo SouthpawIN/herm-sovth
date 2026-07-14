@@ -1,4 +1,4 @@
-import { useState, memo, type ReactNode } from "react"
+import { useState, useEffect, memo, type ReactNode } from "react"
 import { AnimatedAvatar } from "../avatar/AnimatedAvatar"
 import type { ParsedEikon } from "../avatar/eikon"
 import { useTheme } from "../../theme"
@@ -8,6 +8,8 @@ import type { Usage } from "../../types/message"
 import { useGitBranch, rtrunc } from "../../utils/git"
 import { Tail } from "../chat/ThoughtCloud"
 import { ContextGauge } from "./ContextGauge"
+import { useGateway } from "../../app/gateway"
+import type { PetInfoMeta } from "../../utils/gateway-types"
 
 // The pillar body carries a compact identity block, the MCP operational
 // section, and a context-usage gauge at the bottom. Stats/Memory/Recent/
@@ -80,9 +82,19 @@ export const Sidebar = memo((props: {
   const theme = useTheme().theme
   const state = props.agentState ?? "idle"
   const info = props.info
+  const gw = useGateway()
+  const [pet, setPet] = useState<PetInfoMeta | null>(null)
 
   const [mcpOpen, setMcpOpen] = useState(false)
   const [wikiOpen, setWikiOpen] = useState(false)
+
+  useEffect(() => {
+    let live = true
+    gw.request<PetInfoMeta>("pet.info.meta").then(value => {
+      if (live) setPet(value.enabled ? value : null)
+    }).catch(() => { if (live) setPet(null) })
+    return () => { live = false }
+  }, [gw])
 
   const cwd = info?.cwd ?? process.cwd()
   const branch = useGitBranch(cwd)
@@ -149,6 +161,8 @@ export const Sidebar = memo((props: {
           <Row label="Queue" value="proposal queue" />
           <Row label="Flow" value="Collect → Apply" />
         </Section>
+
+        {pet ? <Row label="Petdex" value={pet.displayName ?? pet.slug ?? "active"} /> : null}
 
         <box flexGrow={1} />
         <ContextGauge info={info} usage={props.usage} width={INNER} />

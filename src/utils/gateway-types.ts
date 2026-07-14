@@ -184,6 +184,14 @@ export type SessionInfo = {
   update_command?: string
 }
 
+export type PetInfoMeta = {
+  enabled?: boolean
+  slug?: string
+  displayName?: string
+  scale?: number
+  spritesheetRevision?: string
+}
+
 // ── RPC responses ───────────────────────────────────────────────────
 
 export type SessionCreateResponse = {
